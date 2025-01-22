@@ -1,5 +1,9 @@
 export function useUser() {
   const isUserLogged = useSessionStorage('isUserLogged', false)
 
-  return { isUserLogged: computed(() => isUserLogged) }
+  function setUserLogged() {
+    isUserLogged.value = true
+  }
+
+  return { isUserLogged, setUserLogged }
 }
