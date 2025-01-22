@@ -3,13 +3,13 @@ import type { FormSubmitEvent } from '#ui/types'
 import { isAfter, isSameDay } from 'date-fns'
 import { z } from 'zod'
 import { useCarsStore } from '~/store/useCarsStore'
-import { useReservations } from '~/store/useReservations'
+import { useReservationsStore } from '~/store/useReservationsStore'
 
 const route = useRoute()
 const id = computed(() => route.params.id)
 
 const { getCarById } = useCarsStore()
-const { addReservation } = useReservations()
+const { addReservation } = useReservationsStore()
 
 const car = computed(() => getCarById(Number(id.value)))
 
@@ -52,6 +52,15 @@ if (!car.value) {
 const isModalOpen = ref(false)
 const isLoading = ref(false)
 
+const defaultState = {
+  name: '',
+  email: '',
+  phone: '',
+  fromDate: new Date(),
+  toDate: new Date(),
+  notes: '',
+}
+
 const state = reactive({
   name: '',
   email: '',
@@ -83,6 +92,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   setTimeout(() => {
     isLoading.value = false
     isModalOpen.value = false
+
+    Object.assign(state, defaultState)
   }, 2000)
 }
 </script>

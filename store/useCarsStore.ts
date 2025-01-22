@@ -1,4 +1,4 @@
-export enum ManualTypeEnum {
+export enum TransmissionsTypeEnum {
   MANUAL = 'Manuální',
   AUTOMATIC = 'Automatická',
 }
@@ -14,7 +14,7 @@ export interface Car {
   name: string
   brand: CarBrandEnum
   pricePerDay: number
-  transmissions: ManualTypeEnum
+  transmissions: TransmissionsTypeEnum
   numberOfSeats: number
   age: string
   color: string
@@ -29,7 +29,7 @@ export const useCarsStore = defineStore('cars', () => {
       name: 'Škoda Fabia IV',
       brand: CarBrandEnum.SKODA,
       pricePerDay: 100,
-      transmissions: ManualTypeEnum.MANUAL,
+      transmissions: TransmissionsTypeEnum.MANUAL,
       numberOfSeats: 5,
       age: '2023 - 2024',
       color: 'černá',
@@ -41,7 +41,7 @@ export const useCarsStore = defineStore('cars', () => {
       name: 'Škoda Fabia IV',
       brand: CarBrandEnum.SKODA,
       pricePerDay: 100,
-      transmissions: ManualTypeEnum.MANUAL,
+      transmissions: TransmissionsTypeEnum.MANUAL,
       numberOfSeats: 5,
       age: '2023 - 2024',
       color: 'černá',
@@ -53,7 +53,7 @@ export const useCarsStore = defineStore('cars', () => {
       name: 'Škoda Fabia IV',
       brand: CarBrandEnum.SKODA,
       pricePerDay: 100,
-      transmissions: ManualTypeEnum.MANUAL,
+      transmissions: TransmissionsTypeEnum.MANUAL,
       numberOfSeats: 5,
       age: '2023 - 2024',
       color: 'černá',
@@ -65,7 +65,7 @@ export const useCarsStore = defineStore('cars', () => {
       name: 'Škoda Fabia IV',
       brand: CarBrandEnum.SKODA,
       pricePerDay: 100,
-      transmissions: ManualTypeEnum.MANUAL,
+      transmissions: TransmissionsTypeEnum.MANUAL,
       numberOfSeats: 5,
       age: '2023 - 2024',
       color: 'černá',
@@ -77,7 +77,7 @@ export const useCarsStore = defineStore('cars', () => {
       name: 'Škoda Fabia IV',
       brand: CarBrandEnum.SKODA,
       pricePerDay: 100,
-      transmissions: ManualTypeEnum.MANUAL,
+      transmissions: TransmissionsTypeEnum.MANUAL,
       numberOfSeats: 5,
       age: '2023 - 2024',
       color: 'černá',
@@ -89,7 +89,7 @@ export const useCarsStore = defineStore('cars', () => {
       name: 'Škoda Fabia IV',
       brand: CarBrandEnum.SKODA,
       pricePerDay: 100,
-      transmissions: ManualTypeEnum.MANUAL,
+      transmissions: TransmissionsTypeEnum.MANUAL,
       numberOfSeats: 5,
       age: '2023 - 2024',
       color: 'černá',
@@ -102,8 +102,19 @@ export const useCarsStore = defineStore('cars', () => {
     return cars.value.find(car => car.id === id)
   }
 
+  function addCar(car: Car) {
+    cars.value.push({ ...car, id: cars.value.length + 1 })
+  }
+
+  function editCar(car: Car) {
+    const index = cars.value.findIndex(c => c.id === car.id)
+    cars.value[index] = car
+  }
+
   return {
     cars,
     getCarById,
+    addCar,
+    editCar,
   }
 })

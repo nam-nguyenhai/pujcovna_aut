@@ -4,7 +4,7 @@ import { useCarsStore } from '~/store/useCarsStore'
 
 const carsStore = useCarsStore()
 
-const { cars } = storeToRefs(carsStore)
+const cars = computed(() => carsStore.cars)
 </script>
 
 <template>
