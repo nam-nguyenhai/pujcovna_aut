@@ -8,7 +8,7 @@ const { cars } = storeToRefs(carsStore)
 </script>
 
 <template>
-  <div>
+  <div class="flex max-md:justify-center-center max-[1500px]:flex-wrap items-center gap-5">
     <CarCard v-for="(car, index) in cars" :key="index" :car="car" />
   </div>
 </template>
