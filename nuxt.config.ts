@@ -3,10 +3,12 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxt/eslint',
     '@vee-validate/nuxt',
-    '@nuxt/icon',
-    '@nuxtjs/tailwindcss',
     '@vueuse/nuxt',
+    '@nuxt/ui',
   ],
+  colorMode: {
+    preference: 'light',
+  },
   devtools: { enabled: true },
-  compatibilityDate: '2025-01-21'
+  compatibilityDate: '2025-01-21',
 })
