@@ -7,7 +7,7 @@ const { iconName, value } = defineProps<{
 </script>
 
 <template>
-  <div class="items-center flex gap-x-1">
+  <div class="flex gap-x-1">
     <Icon :class="iconClasses" class="text-gray-500" :name="iconName" />
 
     <slot name="value" :value="value">

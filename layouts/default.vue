@@ -3,9 +3,7 @@
 
 <template>
   <div class="bg-gradient flex h-full flex-col max-md:px-4">
-    <NuxtLink to="/">
-      <Header />
-    </NuxtLink>
+    <Header />
 
     <main class="container mx-auto">
       <slot />

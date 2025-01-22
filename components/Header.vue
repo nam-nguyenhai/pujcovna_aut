@@ -32,21 +32,19 @@ async function onSubmit() {
 
 <template>
   <div class="container mx-auto px-5 md:px-0 flex items-center">
-    <img height="100px" width="100px" class="mr-auto" src="public/logo.webp">
+    <NuxtLink to="/" class="w-fit">
+      <img height="100px" width="100px" class="mr-auto" src="public/logo.webp">
+    </NuxtLink>
 
-    <nav class="flex gap-x-5 text-black text-xl">
+    <nav class="flex ml-auto gap-x-5 text-black text-xl">
       <ClientOnly>
-        <NuxtLink to="/" class="ml-auto">
-          <UButton is="span">
-            Nabídka aut
-          </UButton>
-        </NuxtLink>
+        <UButton is="span" to="/">
+          Nabídka aut
+        </UButton>
 
-        <NuxtLink v-if="isUserLogged" to="/admin">
-          <UButton is="span">
-            Admin
-          </UButton>
-        </NuxtLink>
+        <UButton v-if="isUserLogged" to="/admin">
+          Admin
+        </UButton>
 
         <UButton v-else @click="isLoginModalOpened = true">
           Prihlásit se

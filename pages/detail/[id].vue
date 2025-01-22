@@ -146,7 +146,14 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     <hr class="my-5 border-t-2 border-gray-300">
 
     <div>
-      <CarParameter class="gap-x-3" icon-classes="text-5xl" icon-name="mdi:cog" :value="car.equipment" />
+      <CarParameter class="gap-x-3" icon-classes="text-5xl shrink-0" icon-name="mdi:cog" :value="car.equipment">
+        <template #value="{ value }">
+          <div class="flex flex-col">
+            <span class="font-semibold">Vybavení: </span>
+            {{ value }}
+          </div>
+        </template>
+      </CarParameter>
     </div>
   </div>
 
