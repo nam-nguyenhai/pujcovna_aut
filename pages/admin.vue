@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { format } from 'date-fns'
-import { type Car, useCarsStore } from '~/store/useCarsStore'
-import { useReservationsStore } from '~/store/useReservationsStore'
+import { useCarsStore, type Car } from '~/store/useCarsStore'
+import { type Reservation } from '~/store/useReservationsStore'
 
-const reservationsStore = useReservationsStore()
-const reservations = computed(() => reservationsStore.reservations.map(reservation => ({
+const user = useSupabaseUser()
+
+const { data: reservations } = await useAsyncData<Reservation[]>('reservations', async () => $fetch(`/api/reservations`))
+const { data: cars } = await useAsyncData<Car[]>('cars', async () => $fetch(`/api/cars`))
+
+const reservationsComputed = computed(() => (reservations.value || []).map(reservation => ({
   ...reservation,
   fromDate: format(reservation.fromDate, 'dd.MM.yyyy'),
   toDate: format(reservation.toDate, 'dd.MM.yyyy'),
 })))
+
 const reservationsCollumns = [
   { key: 'name', label: 'Jméno' },
   { key: 'email', label: 'Email' },
@@ -21,7 +26,6 @@ const reservationsCollumns = [
 
 // CARS
 const carsStore = useCarsStore()
-const cars = computed(() => carsStore.cars)
 const carToEdit = ref<Car | undefined>(undefined)
 const isCarFormModalOpened = ref(false)
 
@@ -39,7 +43,7 @@ const carsCollumns = [
 ]
 
 function handleEditCar(index: number) {
-  carToEdit.value = cars.value[index]
+  // carToEdit.value = cars.value[index]
   isCarFormModalOpened.value = true
 }
 
@@ -58,7 +62,7 @@ function handeCreateCar() {
       <UTable
         :empty-state="{ icon: 'i-heroicons-circle-stack-20-solid', label: 'Žádne rezervace' }"
         :columns="reservationsCollumns"
-        :rows="reservations"
+        :rows="reservationsComputed"
       />
     </div>
 

@@ -2,16 +2,16 @@
 import type { FormSubmitEvent } from '#ui/types'
 import { isAfter, isSameDay } from 'date-fns'
 import { z } from 'zod'
-import { useCarsStore } from '~/store/useCarsStore'
-import { useReservationsStore } from '~/store/useReservationsStore'
+import { notify} from 'notiwind'
 
 const route = useRoute()
-const id = computed(() => route.params.id)
+const carId = computed(() => route.params.id)
 
-const { getCarById } = useCarsStore()
-const { addReservation } = useReservationsStore()
+const { data: car, error } = await useAsyncData(`car-${carId}`, async () => $fetch(`/api/cars/${carId.value}`))
 
-const car = computed(() => getCarById(Number(id.value)))
+if(error.value && error.value.statusCode === 404) {
+  throw createError({ statusCode: 404, statusMessage: `Car with id ${carId.value} not found` })
+}
 
 const carParameters = computed(() => [
   {
@@ -40,13 +40,6 @@ const carParameters = computed(() => [
     description: 'Barva',
   },
 ])
-
-if (!car.value) {
-  throw createError({
-    statusCode: 404,
-    message: 'Car not found',
-  })
-}
 
 // modal
 const isModalOpen = ref(false)
@@ -84,17 +77,33 @@ type Schema = z.output<typeof schema>
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   isLoading.value = true
-  await addReservation({
-    ...event.data,
-    carId: car.value!.id,
-  })
+  try {
+    await $fetch('/api/reservations', {
+      method: 'POST',
+      body: {
+        ...event.data,
+        carId: car.value!.id,
+    }})
 
-  setTimeout(() => {
-    isLoading.value = false
-    isModalOpen.value = false
+    notify({
+      group: 'notifications',
+      title: 'Rezervace úspěšně vytvořena',
+      type: 'success',
+    })
 
     Object.assign(state, defaultState)
-  }, 2000)
+    isModalOpen.value = false
+
+  } catch (error: any) { 
+    if(error.statusCode === 400) {
+      notify({
+      group: 'notifications',
+      title: 'Voz na tento termín není dostupný',
+      type: 'error',
+    })}
+  } finally { 
+    isLoading.value = false
+  }
 }
 </script>
 
@@ -190,7 +199,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         </UFormGroup>
 
         <UFormGroup label="Poznámky" name="notes">
-          <UTextarea v-model="state.phone" />
+          <UTextarea v-model="state.notes" />
         </UFormGroup>
 
         <UButton :loading="isLoading" type="submit">
