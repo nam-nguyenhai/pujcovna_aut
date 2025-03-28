@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { format } from 'date-fns'
+import { notify } from 'notiwind'
 import { useCarsStore, type Car } from '~/store/useCarsStore'
 import { type Reservation } from '~/store/useReservationsStore'
 
-const user = useSupabaseUser()
-
-const { data: reservations } = await useAsyncData<Reservation[]>('reservations', async () => $fetch(`/api/reservations`))
-const { data: cars } = await useAsyncData<Car[]>('cars', async () => $fetch(`/api/cars`))
+const { data: reservations } = useAsyncData<Reservation[]>('reservations', async () => $fetch(`/api/reservations`))
+const { data: cars, refresh } = useAsyncData<Car[]>('cars', async () => $fetch(`/api/cars`))
 
 const reservationsComputed = computed(() => (reservations.value || []).map(reservation => ({
   ...reservation,
@@ -25,9 +24,9 @@ const reservationsCollumns = [
 ]
 
 // CARS
-const carsStore = useCarsStore()
 const carToEdit = ref<Car | undefined>(undefined)
 const isCarFormModalOpened = ref(false)
+const isLoading = ref(false)
 
 const carsCollumns = [
   { key: 'name', label: 'Jméno' },
@@ -42,14 +41,73 @@ const carsCollumns = [
   { key: 'actions', label: 'Akce' },
 ]
 
-function handleEditCar(index: number) {
-  // carToEdit.value = cars.value[index]
+function createNewCar() {
+  carToEdit.value = undefined
   isCarFormModalOpened.value = true
 }
 
-function handeCreateCar() {
-  carToEdit.value = undefined
+function editCar(index: number) {
+  carToEdit.value = cars.value?.[index]
   isCarFormModalOpened.value = true
+}
+
+async function handleEditCar(car: Car) {
+  try {
+    isLoading.value = true
+    await $fetch(`/api/cars/${car.id}`, {
+      method: 'put',
+      body: car,
+    })
+
+    notify({
+      group: 'notifications',
+      title: 'Auto bylo úspěšně upraveno',
+      type: 'success',
+    })
+    
+    isCarFormModalOpened.value = false
+    
+    await refresh()
+    carToEdit.value = undefined
+  } catch (error: any) {
+    notify({
+      group: 'notifications',
+      title: 'Něco se pokazilo',
+      type: 'error',
+    })
+
+  } finally { 
+    isLoading.value = false
+  }
+}
+
+async function handleCreateCar(car: Car) {
+  try {
+    isLoading.value = true
+    await $fetch('/api/cars', {
+      method: 'POST',
+      body: car,
+    })
+
+    notify({
+      group: 'notifications',
+      title: 'Auto bylo úspěšně přidáno',
+      type: 'success',
+    })
+    
+    isCarFormModalOpened.value = false
+    
+    await refresh()
+    carToEdit.value = undefined
+  } catch (error: any) {
+    notify({
+      group: 'notifications',
+      title: 'Něco se pokazilo',
+      type: 'error',
+    })
+  } finally { 
+    isLoading.value = false
+  }
 }
 </script>
 
@@ -72,19 +130,20 @@ function handeCreateCar() {
           Auta
         </span>
 
-        <UButton @click="handeCreateCar">
+        <UButton @click="createNewCar">
           Přidat nové auto
         </UButton>
       </h2>
-      <UTable :columns="carsCollumns" :rows="cars">
+
+      <UTable :columns="carsCollumns" :rows="cars || []">
         <template #actions-data="{ index }">
-          <button @click="handleEditCar(index)">
+          <button @click="editCar(index)">
             <Icon name="mdi:pencil" />
           </button>
         </template>
       </UTable>
     </div>
 
-    <CarFormModal v-model="isCarFormModalOpened" :car="carToEdit" @add-car="carsStore.addCar" @edit-car="carsStore.editCar" />
+    <CarFormModal :is-loading="isLoading" v-model="isCarFormModalOpened" :car="carToEdit" @add-car="handleCreateCar" @edit-car="handleEditCar" />
   </div>
 </template>

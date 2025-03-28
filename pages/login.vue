@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import { z } from 'zod'
+
+
+const user = useSupabaseUser()
+
+watch(user, () => {
+  if (user.value) {
+    return navigateTo('/admin')
+  }
+}, { immediate: true })
+
 const isLoading = ref(false)
 
 const supabase = useSupabaseClient()

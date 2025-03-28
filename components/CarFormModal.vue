@@ -5,6 +5,7 @@ import { type Car, CarBrandEnum, TransmissionsTypeEnum } from '~/store/useCarsSt
 
 const { car } = defineProps<{
   car: Car | undefined
+  isLoading: boolean
 }>()
 
 const emit = defineEmits<{
@@ -13,20 +14,6 @@ const emit = defineEmits<{
 }>()
 
 const isModalOpen = defineModel('modelValue', { default: false })
-const isLoading = ref(false)
-
-const defaultState = {
-  id: 0,
-  name: '',
-  brand: CarBrandEnum.AUDI,
-  pricePerDay: '',
-  transmissions: TransmissionsTypeEnum.MANUAL,
-  numberOfSeats: '',
-  age: '',
-  color: '',
-  equipment: '',
-  performance: '',
-}
 
 const state = reactive({
   id: 0,
@@ -57,21 +44,12 @@ const schema = z.object({
 type Schema = z.output<typeof schema>
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  isLoading.value = true
-
   if (car) {
     emit('editCar', event.data as Car)
   }
   else {
     emit('addCar', event.data as Car)
   }
-
-  setTimeout(() => {
-    isLoading.value = false
-    isModalOpen.value = false
-
-    Object.assign(state, defaultState)
-  }, 2000)
 }
 
 watch(
