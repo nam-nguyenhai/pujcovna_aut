@@ -98,7 +98,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     if(error.statusCode === 400) {
       notify({
       group: 'notifications',
-      title: 'Voz na tento termín není dostupný',
+      title: 'Vůz na tento termín není dostupný',
       type: 'error',
     })} else {
       notify({
