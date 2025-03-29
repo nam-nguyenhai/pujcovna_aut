@@ -94,13 +94,19 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     Object.assign(state, defaultState)
     isModalOpen.value = false
 
-  } catch (error: any) { 
+  } catch (error: any) {
     if(error.statusCode === 400) {
       notify({
       group: 'notifications',
       title: 'Voz na tento termín není dostupný',
       type: 'error',
-    })}
+    })} else {
+      notify({
+        group: 'notifications',
+        title: 'Nastala chyba při vytváření rezervace',
+        type: 'error',
+      })
+    }
   } finally { 
     isLoading.value = false
   }
