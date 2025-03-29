@@ -56,7 +56,10 @@ async function handleEditCar(car: Car) {
     isLoading.value = true
     await $fetch(`/api/cars/${car.id}`, {
       method: 'put',
-      body: car,
+      body: {
+        ...car,
+        id: undefined,
+      },
     })
 
     notify({
@@ -86,7 +89,10 @@ async function handleCreateCar(car: Car) {
     isLoading.value = true
     await $fetch('/api/cars', {
       method: 'POST',
-      body: car,
+      body: {
+        ...car,
+        id: undefined
+      },
     })
 
     notify({
